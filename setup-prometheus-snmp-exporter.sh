@@ -90,7 +90,7 @@ lsof -i:9090
 RET=$?
 if [ $RET -ne 0 ]
 then
-  echo "Prometheus should be running"
+  echo "Prometheus it is not running"
   exit 1
 fi
 
@@ -99,7 +99,7 @@ lsof -i:9116
 RET=$?
 if [ $RET -eq 0 ]
 then
-  echo "Prometheus-snmp-exporter should not be running"
+  echo "Prometheus-snmp-exporter it is running"
   exit 1
 fi
 
@@ -130,7 +130,7 @@ lsof -i:9090
 RET=$?
 if [ $RET -ne 0 ]
 then
-  echo "Prometheus should be running"
+  echo "Prometheus it is not running"
   exit 1
 fi
 
@@ -139,7 +139,7 @@ lsof -i:9116
 RET=$?
 if [ $RET -ne 0 ]
 then
-  echo "Prometheus-snmp-exporter should be running"
+  echo "Prometheus-snmp-exporter it is not running"
   exit 1
 fi
 
