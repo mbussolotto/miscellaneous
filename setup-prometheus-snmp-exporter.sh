@@ -3,8 +3,8 @@
 # STEPS
 # 1) Check if the system is cleaned, otherwise clean it
 # 2) Run Prometheus with ad-hoc configuration file
-# 3) create prometheus-snmp-exporter RPM
-# 4) Install, configure and run prometheus-snmp-exporter
+# 3) create prometheus-snmp_exporter RPM
+# 4) Install, configure and run prometheus-snmp_exporter
 #########################################################
 
 #Kill Prometheus if it is running
@@ -19,15 +19,15 @@ if [ -n "${PID}" ]; then
   sudo kill ${PID}
 fi
 
-#Uninstall prometheus-snmp-exporter (just in case)
-sudo rpm -e prometheus-snmp-exporter
+#Uninstall prometheus-snmp_exporter (just in case)
+sudo rpm -e prometheus-snmp_exporter
 
-#check if prometheus-snmp-exporter.service is still present in the system. If yes, exit
-sudo systemctl stop prometheus-snmp-exporter.service
+#check if prometheus-snmp_exporter.service is still present in the system. If yes, exit
+sudo systemctl stop prometheus-snmp_exporter.service
 RET=$?
 if [ $RET -eq 0 ]
 then
-  echo "Prometheus-snmp-exporter service should not be present"
+  echo "Prometheus-snmp_exporter service should not be present"
   exit 1
 fi
 
@@ -85,7 +85,7 @@ PROMETHEUS_PID=$!
 echo "Waiting prometheus ..."
 sleep 3
 
-#Check prometheus-snmp-exporter is running
+#Check prometheus-snmp_exporter is running
 lsof -i:9090
 RET=$?
 if [ $RET -ne 0 ]
@@ -94,35 +94,35 @@ then
   exit 1
 fi
 
-#Check prometheus-snmp-exporter is STILL not running
+#Check prometheus-snmp_exporter is STILL not running
 lsof -i:9116
 RET=$?
 if [ $RET -eq 0 ]
 then
-  echo "Prometheus-snmp-exporter it is running"
+  echo "Prometheus-snmp_exporter it is running"
   exit 1
 fi
 
 #build RPM
-cd /home/bisi-suse/Workspace/osc/home:mbussolotto/prometheus-snmp-exporter
+cd /home/bisi-suse/Workspace/home:mbussolotto/prometheus-snmp_exporter
 osc build
 
 #install RPM
-sudo rpm -i /var/tmp/build-root/openSUSE_Tumbleweed-x86_64/home/abuild/rpmbuild/RPMS/x86_64/prometheus-snmp-exporter-0.20.0-0.x86_64.rpm
+sudo rpm -i /var/tmp/build-root/openSUSE_Tumbleweed-x86_64/home/abuild/rpmbuild/RPMS/x86_64/prometheus-snmp_exporter-0.20.0-0.x86_64.rpm
 
 #add ARGS
-sudo sed -i 's/ARGS=\"\"/ARGS=\"--config.file=\/etc\/prometheus\/snmp.yml\"/' /etc/default/prometheus-snmp-exporter
+sudo sed -i 's/ARGS=\"\"/ARGS=\"--config.file=\/etc\/prometheus-snmp_exporter\/snmp.yml\"/' /etc/default/prometheus-snmp_exporter
 
 #set correct USER
-sudo sed -i "s/User=prometheus/User=${USER}/" /usr/lib/systemd/system/prometheus-snmp-exporter.service
+sudo sed -i "s/User=prometheus/User=${USER}/" /usr/lib/systemd/system/prometheus-snmp_exporter.service
 
 #reload daemon
 sudo systemctl daemon-reload
 
 #start the daemon
-sudo systemctl start prometheus-snmp-exporter.service 
+sudo systemctl start prometheus-snmp_exporter.service 
 
-echo "Waiting prometheus-snmp-exporter ..."
+echo "Waiting prometheus-snmp_exporter ..."
 sleep 3
 
 #Check prometheus is STILL running
@@ -134,15 +134,15 @@ then
   exit 1
 fi
 
-#Check prometheus-snmp-exporter is running
+#Check prometheus-snmp_exporter is running
 lsof -i:9116
 RET=$?
 if [ $RET -ne 0 ]
 then
-  echo "Prometheus-snmp-exporter it is not running"
+  echo "Prometheus-snmp_exporter it is not running"
   exit 1
 fi
 
 read -p "Press enter to continue"
 sudo kill $PROMETHEUS_PID
-sudo systemctl stop prometheus-snmp-exporter.service 
+sudo systemctl stop prometheus-snmp_exporter.service 
